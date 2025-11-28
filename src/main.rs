@@ -33,6 +33,7 @@ fn main() -> Result<()> {
         Config::save_default(config_dir.join("config.toml"))?;
     }
 
+    // let config = Config::parse(config_dir.join("config.toml"))?;
     let config = Config::parse(config_dir.join("config.toml"))?;
     dbg!(&config);
 
