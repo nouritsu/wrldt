@@ -26,7 +26,7 @@ pub enum ConfigError {
 impl Default for Config {
     fn default() -> Self {
         Self {
-            update_interval: 60,
+            update_interval: 100,
             main_timezone: Tz::default(),
             timezones: vec![Tz::default()],
         }
