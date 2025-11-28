@@ -1,5 +1,6 @@
 use chrono::prelude::*;
 use chrono_tz::Tz;
+use clap::Parser;
 use color_eyre::Result;
 use crossterm::event::{self, Event};
 use directories::ProjectDirs;
@@ -7,23 +8,33 @@ use ratatui::{DefaultTerminal, prelude::*};
 use std::fs;
 use wrldt::config::Config;
 
+#[derive(Parser)]
+struct Args {
+    #[arg(long)]
+    reset_config: bool,
+}
+
 fn main() -> Result<()> {
     color_eyre::install()?;
+
+    let args = Args::parse();
 
     let config_dir = ProjectDirs::from("com", "nouritsu", "wrldt")
         .expect("failed to get retrieve project directory")
         .config_dir()
         .to_owned();
-    dbg!(&config_dir);
 
     fs::create_dir_all(&config_dir).expect(&format!(
         "unable to create config directory at {}",
         config_dir.to_string_lossy()
     ));
 
-    Config::save_default(config_dir.join("config.toml"))?; // create default if not exists
+    if !fs::exists(&config_dir.join("config.toml"))? || args.reset_config {
+        Config::save_default(config_dir.join("config.toml"))?;
+    }
 
     let config = Config::parse(config_dir.join("config.toml"))?;
+    dbg!(&config);
 
     let terminal = ratatui::init();
     let result = run(terminal, &config);

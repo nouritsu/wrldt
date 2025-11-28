@@ -72,14 +72,10 @@ impl Config {
         Ok(config)
     }
 
-    pub fn save_default(path: impl AsRef<Path>) -> Result<bool, ConfigError> {
-        if fs::exists(&path)? {
-            return Ok(false);
-        }
-
+    pub fn save_default(path: impl AsRef<Path>) -> Result<(), ConfigError> {
         let config: Config_ = Self::default().into();
         let config_toml = toml::to_string(&config)?;
         fs::write(path, config_toml)?;
-        Ok(true)
+        Ok(())
     }
 }
