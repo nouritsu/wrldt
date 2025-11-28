@@ -43,21 +43,18 @@ impl TryFrom<Conf> for Config {
             Tz::from_str(&tz).map_err(ConfigError::InvalidTimezone)?
         };
         let timezones = {
-            let mut tzs = {
-                let tz_strs = value.get::<Vec<String>>("timezones")?;
-                let tzs_result: Result<Vec<Tz>, Self::Error> = tz_strs
-                    .into_iter()
-                    .map(|tz| Tz::from_str(&tz).map_err(ConfigError::InvalidTimezone))
-                    .collect();
+            let tz_strs = value.get::<Vec<String>>("timezones")?;
+            let tzs_result: Result<Vec<Tz>, Self::Error> = tz_strs
+                .into_iter()
+                .map(|tz| Tz::from_str(&tz).map_err(ConfigError::InvalidTimezone))
+                .collect();
 
-                tzs_result?
-            };
-
-            if !tzs.contains(&main_timezone) {
-                tzs.push(main_timezone);
-            }
-
-            tzs
+            tzs_result.and_then(|mut tzs| {
+                if !tzs.contains(&main_timezone) {
+                    tzs.push(main_timezone);
+                }
+                Ok(tzs)
+            })?
         };
 
         Ok(Self {
