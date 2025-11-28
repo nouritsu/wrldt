@@ -47,7 +47,7 @@ fn run(mut terminal: DefaultTerminal, config: &Config) -> Result<()> {
     loop {
         terminal.draw(|frame| render(frame, &config.timezones))?;
 
-        if event::poll(std::time::Duration::from_millis(100))? {
+        if event::poll(std::time::Duration::from_millis(config.update_interval))? {
             if let Event::Key(key) = event::read()? {
                 if key.code.is_char('q') || key.code.is_esc() {
                     break Ok(());
